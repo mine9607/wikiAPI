@@ -96,7 +96,17 @@ app
       res.send("No articles matching that title found.");
     }
   })
-  .patch()
+  .patch(async (req, res) => {
+    const articleTitle = req.params.articleTitle;
+    const foundArticle = ArticleModel.findOne({ title: articleTitle });
+
+    if (foundArticle) {
+      await ArticleModel.updateOne({ title: articleTitle }, { $set: req.body });
+      res.send("Article successfully updated.");
+    } else {
+      res.send("No articles matching that title found.");
+    }
+  })
   .delete(async (req, res) => {
     const articleTitle = req.params.articleTitle;
     const deletedArticle = await ArticleModel.deleteOne({ title: articleTitle });
@@ -112,20 +122,32 @@ app
 // });
 
 //Create the PUT API Verb for replacing a specific article
-app.put("/articles/:articleTitle", async (req, res) => {
+// app.put("/articles/:articleTitle", async (req, res) => {
+//   const articleTitle = req.params.articleTitle;
+//   const foundArticle = ArticleModel.findOne({ title: articleTitle });
+//   const title = req.body.title;
+//   const content = req.body.content;
+
+//   if (foundArticle) {
+//     await ArticleModel.updateOne({ title: articleTitle }, { title: title, content: content });
+//     res.send("Article successfully updated.");
+//   } else {
+//     res.send("No articles matching that title found.");
+//   }
+// });
+
+//Create the PATCH API Verb for replacing a specific article attribute
+app.patch("/articles/:articleTitle", async (req, res) => {
   const articleTitle = req.params.articleTitle;
   const foundArticle = ArticleModel.findOne({ title: articleTitle });
-  const title = req.body.title;
-  const content = req.body.content;
 
   if (foundArticle) {
-    await ArticleModel.updateOne({ title: articleTitle }, { title: title, content: content });
+    await ArticleModel.updateOne({ title: articleTitle }, { $set: req.body });
     res.send("Article successfully updated.");
   } else {
     res.send("No articles matching that title found.");
   }
 });
-//Create the PATCH API Verb for replacing a specific article attribute
 
 //Create the DELETE API Verb for a specific article
 // app.delete("/articles/:_id", async (req, res) => {
