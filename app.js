@@ -77,9 +77,25 @@ app
   .get(async (req, res) => {
     const articleTitle = req.params.articleTitle;
     const foundArticle = await ArticleModel.findOne({ title: articleTitle });
-    res.send(foundArticle);
+    if (foundArticle) {
+      res.send(foundArticle);
+    } else {
+      res.send("No articles matching that title found.");
+    }
   })
-  .put()
+  .put(async (req, res) => {
+    const articleTitle = req.params.articleTitle;
+    const foundArticle = ArticleModel.findOne({ title: articleTitle });
+    const title = req.body.title;
+    const content = req.body.content;
+
+    if (foundArticle) {
+      await ArticleModel.updateOne({ title: articleTitle }, { title: title, content: content });
+      res.send("Article successfully updated.");
+    } else {
+      res.send("No articles matching that title found.");
+    }
+  })
   .patch()
   .delete(async (req, res) => {
     const articleTitle = req.params.articleTitle;
@@ -96,7 +112,19 @@ app
 // });
 
 //Create the PUT API Verb for replacing a specific article
+app.put("/articles/:articleTitle", async (req, res) => {
+  const articleTitle = req.params.articleTitle;
+  const foundArticle = ArticleModel.findOne({ title: articleTitle });
+  const title = req.body.title;
+  const content = req.body.content;
 
+  if (foundArticle) {
+    await ArticleModel.updateOne({ title: articleTitle }, { title: title, content: content });
+    res.send("Article successfully updated.");
+  } else {
+    res.send("No articles matching that title found.");
+  }
+});
 //Create the PATCH API Verb for replacing a specific article attribute
 
 //Create the DELETE API Verb for a specific article
